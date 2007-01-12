@@ -1,0 +1,58 @@
+Pactester
+=========
+
+Pactester is a tool to test Proxy Auto Configuration (PAC) files. PAC files are
+used by the browsers to determine the "right" proxy for a URL. Testing PAC
+files is a difficult task because only browsers understand them and they use
+them in an obscure way. I wrote pactester to test the pac files - to find out
+which proxy my browser will use for a certain url.
+
+Pactester reads a PAC file, evaluates it in a Javascript context and uses this
+PAC file's logic to determine the proxy for a specific url.
+
+Usage: ./pactester -p www.pac -u http://www.example.com [-h www.example.com]
+       ./pactester -p www.pac -f urlslist
+
+* How It Works?
+---------------
+
+It evaluates the PAC file in a Javascript context. To do that it uses the
+JavaScript::SpiderMonkey perl module, which is a perl interface to  Mozilla's
+C implementation of Javascript- Spidermonkey.
+
+PAC files use certain javascript functions. These functions have been defined
+in pac_utils.js file included with this tool (This file was generated using
+another file from Mozilla source code). Also, since javascript has no dns
+resolving capability which is required by "dnsResolve" in PAC files,
+'dnsResolve' has been defined in perl and then exported to JavaScript context.
+
+* Install
+---------
+
+see INSTALL in root directory of package.
+
+* How to use it?
+----------------
+
+You can use it in 2 modes: a) Single URL processing b) URL list processing.
+
+a) To find out the proxy that will be returned by a pac file named "www.pac"
+for the url http://www.example.com :
+./pactester -p www.pac -u http://www.example.com -h www.example.com
+
+-p pacfile : specifies the pac file path.
+-u url : specifies the url to be tested for
+-h host : specifies the host part of the url. This field is optional. If not
+specified, it is generated from the url.
+
+b) You can also use it to determine proxies for a list of URLs :
+./pactester -p www.pac -f urllist
+
+-f urllist : urllist is a file containing the list of urls to be checked.
+
+* Platforms
+  ---------
+
+I have tested it to work on Linux and Intel Macbooks.
+
+Manu Garg, http://www.manugarg.com , 2006

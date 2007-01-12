@@ -1,0 +1,50 @@
+Pactester uses JavsSript::SpiderMonkey perl module. JavaScript::SpiderMonkey in
+turn requires Spidermonkey (Mozilla's implementation of JavaScript in C) and
+Log::Log4perl module. Source code for all 3 softwares can be found inside the
+build directory.
+
+Install Spidermonkey
+--------------------
+
+* Go to build directory and untar Spidermonkey tarball:
+manugarg@hobbiton:~/pactester/build$ cd build
+manugarg@hobbiton:~/pactester/build$ tar xzfv js-1.5.tar.gz
+
+* Build js.
+manugarg@hobbiton:~/pactester/build$ cd js/src
+manugarg@hobbiton:~/pactester/build$ make -f Makefile.ref
+
+Install Log::Log4perl
+---------------------
+(needed only if you don't have it already)
+
+* Extract Log-Log4perl tarball:
+manugarg@hobbiton:~/pactester/build$ tar xzvf Log-Log4perl-1.08.tar.gz
+
+* Build and install Log::Log4perl like any other perl module:
+manugarg@hobbiton:~/pactester/build$ cd Log-Log4perl-1.08
+manugarg@hobbiton:~/pactester/build$ perl Makefile.PL
+manugarg@hobbiton:~/pactester/build$ make
+manugarg@hobbiton:~/pactester/build$ sudo make install
+
+Install JavaScript::SpiderMonkey
+--------------------------------
+* Extract JavaScript-SpiderMonkey tarball:
+manugarg@hobbiton:~/pactester/build$ tar xzfv JavaScript-SpiderMonkey-0.17.tar.gz
+
+* Make sure that JavaScript-SpiderMonkey and js are at same directory level
+manugarg@hobbiton:~/pactester/build$ ls .
+JavaScript-SpiderMonkey-0.17
+JavaScript-SpiderMonkey-0.17.tar.gz
+js
+js-1.5.tar.gz
+
+* Now build and install JavaScript-SpiderMonkey like any other perl module:
+manugarg@hobbiton:~/pactester/build$ cd JavaScript-SpiderMonkey-0.17
+manugarg@hobbiton:~/pactester/build$ perl Makefile.PL
+manugarg@hobbiton:~/pactester/build$ make
+manugarg@hobbiton:~/pactester/build$ sudo make install
+
+-- and you're good to go! Have fun.
+
+Manu Garg, http://www.manugarg.com, 2006
