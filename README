@@ -10,8 +10,18 @@ which proxy my browser will use for a certain url.
 Pactester reads a PAC file, evaluates it in a Javascript context and uses this
 PAC file's logic to determine the proxy for a specific url.
 
-Usage: ./pactester -p www.pac -u http://www.example.com [-h www.example.com]
-       ./pactester -p www.pac -f urlslist
+Usage:  ./pactester <-p pacfile> <-u url> [-h host]
+        ./pactester <-p pacfile> <-f urlslist>
+
+Options:
+  -p pacfile: PAC file to test
+  -u url: URL to test
+  -h host: Host part of the URL
+  -f urlslist: a file containing list of URLs to be tested.
+
+Example:
+  ./pactester -p wpad.dat -u http://www.google.com
+  ./pactester -p wpad.dat -f url_list
 
 * How It Works?
 ---------------
@@ -20,39 +30,34 @@ It evaluates the PAC file in a Javascript context. To do that it uses the
 JavaScript::SpiderMonkey perl module, which is a perl interface to  Mozilla's
 C implementation of Javascript- Spidermonkey.
 
-PAC files use certain javascript functions. These functions have been defined
+PAC files use certain JavaScript functions. These functions have been defined
 in pac_utils.js file included with this tool (This file was generated using
-another file from Mozilla source code). Also, since javascript has no dns
-resolving capability which is required by "dnsResolve" in PAC files,
-'dnsResolve' has been defined in perl and then exported to JavaScript context.
+another file from Mozilla source code). Also, since JavaScript has no dns
+resolving capability which is required by the "dnsResolve" and "myIpAddress"
+functions in the PAC files, these functions have been defined in perl and then
+exported to a JavaScript context.
 
 * Install
 ---------
 
-see INSTALL in root directory of package.
+Please see 'INSTALL' in the root directory of the package.
 
 * How to use it?
 ----------------
 
-You can use it in 2 modes: a) Single URL processing b) URL list processing.
+Pactester can be used to determine the proxy for a single URL or a list of URLs.
 
-a) To find out the proxy that will be returned by a pac file named "www.pac"
-for the url http://www.example.com :
-./pactester -p www.pac -u http://www.example.com -h www.example.com
+To determine the proxy for a single URL:
+./pactester -p www.pac -u http://www.example.com
 
--p pacfile : specifies the pac file path.
--u url : specifies the url to be tested for
--h host : specifies the host part of the url. This field is optional. If not
-specified, it is generated from the url.
-
-b) You can also use it to determine proxies for a list of URLs :
+For a list of URLs :
 ./pactester -p www.pac -f urllist
-
--f urllist : urllist is a file containing the list of urls to be checked.
+where urllist is a file containing the list of URLs separated by newline.
 
 * Platforms
   ---------
 
-I have tested it to work on Linux and Intel Macbooks.
+pactester has been tested to work on Linux and Intel Macs.
 
-Manu Garg, http://www.manugarg.com , 2006
+Author: Manu Garg <manugarg@google.com>
+Copyright (C) 2006 Google Inc.

@@ -1,7 +1,11 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # Copyright (C) 2006 Google Inc.
-
+# Author: Manu Garg <manugarg@google.com>
+#
+# pactester is a tool to test proxy auto-configuration (PAC) files. Please read
+# README file included with this package for more information about this tool.
+#
 # pactester is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -16,6 +20,9 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+use strict;
+
+use FindBin;
 use Getopt::Std;
 use Socket;
 use Sys::Hostname;
@@ -30,37 +37,69 @@ my $url = $options{u} if defined $options{u};
 my $host = $options{h} if defined $options{h};
 my $urls_list = $options{f} if defined $options{f};
 
-# Find out pac utils path
-$pac_utils_path = `dirname $0`;
-chomp($pac_utils_path);
-$pac_utils_path .= '/pac_utils.js';
-
 sub printusage{
   print <<EOF
-  Usage: ./pactester -p www.pac -u http://www.example.com [-h www.example.com]
-         ./pactester -p www.pac -f urlslist
+
+Usage:  ./pactester <-p pacfile> <-u url> [-h host]
+        ./pactester <-p pacfile> <-f urlslist>
+
+Options:
+  -p pacfile: PAC file to test
+  -u url: URL to test
+  -h host: Host part of the URL
+  -f urlslist: a file containing list of URLs to be tested.
 EOF
 }
 
 # Check for right number of options
-if(not defined $mypac_file or (not defined $url and not defined $urls_list)) {
+if (not defined $mypac_file or (not defined $url and not defined $urls_list)) {
+  print "Wrong number of arguments!\n";
   printusage();
   exit(1);
 }
 
-#Don't process $urls_list and $url at the same time
-if(defined $urls_list and defined $url) {
+# Don't process $urls_list and $url at the same time
+if (defined $urls_list and defined $url) {
+  print "Wrong number of arguments!\n";
   printusage();
   exit(1);
 }
 
-my $js_context = JavaScript::SpiderMonkey->new();
+# Define DNS resolve needed by pac files
+sub dns_res($) {
+  my $hostname = shift;
+  my $addr = gethostbyname($hostname);
+  if ($addr) { return inet_ntoa($addr); }
+  else { return 'null'; }
+}
+
+# Define a function to get my IP address
+sub my_ip($) {
+  my $ip = dns_res(Sys::Hostname::hostname);
+  if ($ip == 'null') { return '127.0.0.1'; }
+  return $ip;
+}
+
+# Find proxy for a url and a host
+sub findproxy($$$) {
+  my ($j, $url, $host) = @_;
+  $j->property_by_path("pac.url",$url);
+  $j->property_by_path("pac.host",$host);
+  $j->property_by_path("pac.proxy");
+  my $rc = $j->eval(q!
+    pac.proxy=FindProxyForURL(pac.url,pac.host);
+  !);
+  if ($rc != 1) {print $@; return 0;}
+  return 1;
+}
+
+# pac utils path. this file contains the js function used in pac files.
+my $pac_utils_path .= "$FindBin::Bin/pac_utils.js";
 
 # Read javascript files to evaluate
-
 my $oldifs = $/;
 undef $/;
-open(FILE,$pac_utils_path) || die "Could not open pac_utils.js (Contains functions used by PAC files)\n";
+open(FILE,$pac_utils_path) || die "Could not open pac_utils.js\n";
 my $nspac = <FILE>;
 close(FILE);
 open(FILE,$mypac_file) || die "Could not open your pac file: $mypac_file\n";
@@ -68,31 +107,15 @@ my $mypac = <FILE>;
 close(FILE);
 $/ = $oldifs;
 
+# Create and initialize JavaScript context
+my $js_context = JavaScript::SpiderMonkey->new();
 $js_context->init();  # Initialize Runtime/Context
 
-#Create a 'write' javascript function that writes to console
-$js_context->function_set("write", sub {print @_} );
-
-
-#Define DNS resolve needed by pac files
-sub dns_res {
-  $hostname = shift;
-  $addr = gethostbyname($hostname);
-  if($addr) {return inet_ntoa($addr);}
-  else {return null;}
-}
+# Export perl functions to JavaScript context.
 $js_context->function_set("dnsResolve", sub {dns_res @_});
-
-sub my_ip {
-  $ip = dns_res(Sys::Hostname::hostname);
-  if ($ip == null){
-    return '127.0.0.1';
-  }
-  return $ip;
-}
 $js_context->function_set("myIpAddress", sub {my_ip @_});
 
-# Eval pac_utils.js and our pac file
+# Evaluate pac_utils.js and PAC file
 my $rc = $js_context->eval($nspac);
 $rc = $js_context->eval($mypac);
 if ($rc != 1) {
@@ -100,38 +123,34 @@ if ($rc != 1) {
   die "Could not evaluate your pac file\n"
 }
 
-# Find proxy for a url and a host
-sub findproxy {
-  $j = shift;
-  $url = shift;
-  $host = shift;
-  $j->property_by_path("pac.url",$url);
-  $j->property_by_path("pac.host",$host);
-  $j->property_by_path("pac.proxy");
-  $rc = $j->eval(q!
-    pac.proxy=FindProxyForURL(pac.url,pac.host);
-  !);
-  if($rc != 1) {print $@; return false;}
-}
-
 # Single URL mode
-if(defined $url){
-  if(defined $url and not defined $host){
-    $url =~ /(http[s]|ftp)?\:\/\/([^\/]*).*/;
-    $host = $2;
+if (defined $url){
+  $url =~ /(http[s]?|ftp)\:\/\/[^\/]+/ || die "URL: $url is not valid\n";
+  if (not defined $host) { $host = $2; }
+  if (findproxy($js_context, $url, $host)){
+    print $js_context->property_get("pac.proxy")."\n";
+  } else {
+    print "Could not find proxy for url: $url";
   }
-  findproxy($js_context,$url,$host);
-  print $js_context->property_get("pac.proxy")."\n";
 }
 
-# URL list mode
-if(defined $urls_list) {
+# Batch processing mode
+if (defined $urls_list) {
   open(FILE, $urls_list);
-  @urllist = <FILE>;
+  my @urllist = <FILE>;
   foreach (@urllist) {
     chomp;
-    /(http[s]?|ftp)\:\/\/([^\/]*).*/;
-    findproxy($js_context,$_,$2);
-    print $js_context->property_get("pac.proxy")."\n"; 
+    my $url = $_;
+    # Extract host from URL
+    if (not $url =~ /(http[s]?|ftp)\:\/\/([^\/]+).*/) {
+      print "URL: '$url' is not valid\n";
+      next;
+    }
+    my $host = $2;
+    if (findproxy($js_context, $url, $host)){
+      print $url."|".$js_context->property_get("pac.proxy")."\n";
+    } else {
+      print "Could not find proxy for url: $url";
+    }
   }
 }
