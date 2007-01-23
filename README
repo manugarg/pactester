@@ -54,6 +54,22 @@ For a list of URLs :
 ./pactester -p www.pac -f urllist
 where urllist is a file containing the list of URLs separated by newline.
 
+* Extending command line web clients:
+------------------------------------
+
+Pactester can be also be used to extend command line web clients like curl and
+perl-libwww library.
+
+To use it with curl: Right now, curl doesn't have the functionality to
+evaluate PAC files to find out proxy for a given URL. However, based on
+pactester, you can write a wrapper perl script around curl. This perl script
+will first find out the proxy for the URL, the way that pactester finds out,
+and then it will call curl with the option '-x "proxy server as returned by
+pactester method"'.
+
+Similarly, this method can be used inside perl-libwww web clients too.
+
+
 * Platforms
   ---------
 
