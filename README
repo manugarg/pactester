@@ -76,4 +76,4 @@ Similarly, this method can be used inside perl-libwww web clients too.
 pactester has been tested to work on Linux and Intel Macs.
 
 Author: Manu Garg <manugarg@google.com>
-Copyright (C) 2006 Google Inc.
+Copyright (C) 2007 Google Inc.
