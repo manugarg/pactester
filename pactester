@@ -76,7 +76,7 @@ sub dns_res($) {
 # Define a function to get my IP address
 sub my_ip($) {
   my $ip = dns_res(Sys::Hostname::hostname);
-  if ($ip == 'null') { return '127.0.0.1'; }
+  if ($ip eq 'null') { return '127.0.0.1'; }
   return $ip;
 }
 
