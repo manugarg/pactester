@@ -27,6 +27,7 @@ use Getopt::Std;
 use Socket;
 use Sys::Hostname;
 
+#use lib qw(INCPATH)
 use JavaScript::SpiderMonkey;
 
 my %options=();
