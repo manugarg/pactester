@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# Check for proper arguments.
+if [ $# -gt 1 -o $1 = '-h' -o $1 = '--help' ];then
+  echo -e "Usage:\t./install.sh [install_path]"
+  exit 1
+fi
+
+if [ ! -d $1 ];then
+  echo "$1 is not a valid directory. Please create directory before starting."
+  echo -e "Usage:\t./install.sh [install_path]"
+  exit 1
+fi
+
 prefix=$1
 build_dir=`pwd`
 
