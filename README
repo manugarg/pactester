@@ -2,13 +2,15 @@ Pactester
 =========
 
 Pactester is a tool to test Proxy Auto Configuration (PAC) files. PAC files are
-used by the browsers to determine the "right" proxy for a URL. Testing PAC
-files is a difficult task because only browsers understand them and they use
-them in an obscure way. I wrote pactester to test the pac files - to find out
-which proxy my browser will use for a certain url.
+used by browsers to determine the "right" proxy for a URL. Since the PAC file
+evaluation mechanism is generated inside the browser and cannot be accessed
+from outside, the only way to tell which proxy your browser will use for a
+specific URL is manual inspection of the PAC file. But manual inspectiondoesn't really scale very well. Pactester resolves this problem. It makes use
+of JavaScript interpreter and netscape/mozilla APIs to evaluate the PAC files
+and automates the whole process.
 
-Pactester reads a PAC file, evaluates it in a Javascript context and uses this
-PAC file's logic to determine the proxy for a specific url.
+Pactester reads a PAC file, evaluates it in a JavaScript context and uses this
+PAC file's logic to determine the proxy for a specific URL.
 
 Usage:  ./pactester <-p pacfile> <-u url> [-h host]
         ./pactester <-p pacfile> <-f urlslist>
@@ -32,7 +34,7 @@ C implementation of Javascript- Spidermonkey.
 
 PAC files use certain JavaScript functions. These functions have been defined
 in pac_utils.js file included with this tool (This file was generated using
-another file from Mozilla source code). Also, since JavaScript has no dns
+another file from Mozilla source code). Also, since JavaScript has no DNS
 resolving capability which is required by the "dnsResolve" and "myIpAddress"
 functions in the PAC files, these functions have been defined in perl and then
 exported to a JavaScript context.
@@ -73,7 +75,7 @@ Similarly, this method can be used inside perl-libwww web clients too.
 * Platforms
   ---------
 
-pactester has been tested to work on Linux and Intel Macs.
+Pactester has been tested to work on Linux and Intel Macs.
 
 Author: Manu Garg <manugarg@google.com>
 Copyright (C) 2007 Google Inc.

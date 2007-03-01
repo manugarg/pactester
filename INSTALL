@@ -1,7 +1,47 @@
-Pactester uses JavsSript::SpiderMonkey perl module. JavaScript::SpiderMonkey in
-turn requires Spidermonkey (Mozilla's implementation of JavaScript in C) and
-Log::Log4perl module. Source code for all 3 softwares can be found inside the
-build directory.
+Pactester consists of a perl script 'pactester' and a set of JavaScript
+functions defined in 'pac_utils.js'. Pactester doesn't really require any
+installation as such. You can just download it, extract it and start using it
+if you have all the dependencies installed on your system, which is usually not
+the case ;-).
+
+Dependencies: 'pactester' uses 'JavaSript::SpiderMonkey' perl module for
+JavaScript evaluation. JavaScript::SpiderMonkey in turn requires 'Spidermonkey'
+(Mozilla's implementation of JavaScript in C) and 'Log::Log4perl' module.
+However, to ease the installation process, pactester tarball comes with the
+source code of all 3 softwares. You can find them in 'build' dir inside the
+package.
+
+Automated Installation Using install.sh:
+=======================================
+Starting with version 1.0.3, pactester comes with a cool install script. To use
+the script go to 'build' directory inside the package and run:
+  ./install.sh [install_path]
+
+'install_path' is the location where you want to install pactester. If you don't
+specify the install path, perl modules will be installed in the standard
+location (you'll need root access for that of course) and script will be left
+in the package directory.
+
+For example, running 'sudo ./install.sh' on my system, installs perl modules in
+/usr/local/{lib,share}/perl/5.8.8/.
+
+Sometimes it can be very desirable to install pactester in a non-standard
+location, for example if you don't have root access or you want to install it
+in your home directory to avoid cluttering the system. Well, it's very simple.
+Just run install.sh as:
+  ./install.sh $HOME/tools/
+
+This will install perl modules in $HOME/tools/{lib,share}/perl/. and pactester
+in $HOME/tools. Install script takes care of updating the library search path
+in 'pactester', so after installation, you can run pactester simply as:
+  $HOME/tools/pactester
+
+
+Manual Installation:
+===================
+
+Of course, if you don't like a script doing some "magic" on your system, you
+can choose to install pactester manually.
 
 Install Spidermonkey
 --------------------
