@@ -50,9 +50,12 @@ Install Spidermonkey
 manugarg@hobbiton:~/pactester/build$ cd build
 manugarg@hobbiton:~/pactester/build$ tar xzfv js-1.5.tar.gz
 
-* Build js.
+* Build js and install libjs.so
 manugarg@hobbiton:~/pactester/build$ cd js/src
 manugarg@hobbiton:~/pactester/build$ make -f Makefile.ref
+manugarg@hobbiton:~/pactester/build$ sudo cp Linux_All_DBG.OBJ/libjs.so /usr/lib
+(If you don't want to copy it to /usr/lib, copy it to some other directory and
+point your environment variable LD_LIBRARY_PATH there.)
 
 Install Log::Log4perl
 ---------------------

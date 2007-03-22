@@ -33,6 +33,9 @@ cd $build_dir
 tar xzvf js*.tar.gz
 cd js/src
 make -f Makefile.ref
+# Install libjs.so in $prefix/lib or /usr/lib
+libjs_path=`find $PWD -name "libjs.so"`
+install -D $libjs_path ${prefix:-/usr}/lib/libjs.so
 
 # Build JavaScript::SpiderMonkey
 cd $build_dir
@@ -40,7 +43,9 @@ export PERLLIB=$log_lib_path
 tar xzvf JavaScript-SpiderMonkey*.tar.gz
 cd JavaScript-SpiderMonkey*
 perl Makefile.PL PREFIX=$prefix
-make
+# LD_RUN_PATH set by MakeMaker is not good. Delete it.
+sed -i "/^LD_RUN_PATH[ ]*=.*$/d" Makefile
+LD_RUN_PATH=${prefix:-/usr}/lib make
 make install
 
 
@@ -55,7 +60,9 @@ if [ ! -z $prefix ];then
   cp ../pac_utils.js $prefix
   echo -e "\n\n"
   echo -e "###########################################"
-  echo -e ">>Set your PERLLIB to following path:"
+  echo -n ">>PERLLIB="
   echo -e "$log_lib_path:$js_lib_path"
+  echo -e "I have set up PERLLIB path in pactester script, so you won't have to"
+  echo -e "set it as an environment variable :)\n"
 fi
 
