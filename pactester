@@ -75,7 +75,7 @@ sub dns_res($) {
 }
 
 # Define a function to get my IP address
-sub my_ip($) {
+sub my_ip() {
   my $ip = dns_res(Sys::Hostname::hostname);
   if ($ip eq 'null') { return '127.0.0.1'; }
   return $ip;
@@ -113,8 +113,8 @@ my $js_context = JavaScript::SpiderMonkey->new();
 $js_context->init();  # Initialize Runtime/Context
 
 # Export perl functions to JavaScript context.
-$js_context->function_set("dnsResolve", sub {dns_res @_});
-$js_context->function_set("myIpAddress", sub {my_ip @_});
+$js_context->function_set("dnsResolve", sub {dns_res shift});
+$js_context->function_set("myIpAddress", sub {my_ip});
 
 # Evaluate pac_utils.js and PAC file
 my $rc = $js_context->eval($nspac);
