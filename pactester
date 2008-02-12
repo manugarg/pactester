@@ -31,23 +31,25 @@ use Sys::Hostname;
 use JavaScript::SpiderMonkey;
 
 my %options=();
-getopt("puhf",\%options);
+getopt("puhcf",\%options);
 
 my $mypac_file = $options{p} if defined $options{p};
 my $url = $options{u} if defined $options{u};
 my $host = $options{h} if defined $options{h};
+my $client_ip = $options{c} if defined $options{c};
 my $urls_list = $options{f} if defined $options{f};
 
 sub printusage{
   print <<EOF
 
-Usage:  ./pactester <-p pacfile> <-u url> [-h host]
+Usage:  ./pactester <-p pacfile> <-u url> [-h host] [-c client_ip]
         ./pactester <-p pacfile> <-f urlslist>
 
 Options:
   -p pacfile: PAC file to test
   -u url: URL to test
   -h host: Host part of the URL
+  -c client_ip: Client(my) IP address (defaults to IP address of machine on which script is running)
   -f urlslist: a file containing list of URLs to be tested.
 EOF
 }
@@ -66,6 +68,18 @@ if (defined $urls_list and defined $url) {
   exit(1);
 }
 
+# Validate IP address
+if (defined $client_ip) {
+  my @octets = split(/\./, $client_ip);
+  if ($client_ip !~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ or
+      $octets[0] > 255 or $octets[1] > 255 or
+      $octets[2] > 255 or $octets[3] > 255) {
+    print "Invalid IP address: $client_ip!\n";
+    printusage();
+    exit(1);
+  }
+}
+
 # Define DNS resolve needed by pac files
 sub dns_res($) {
   my $hostname = shift;
@@ -76,6 +90,7 @@ sub dns_res($) {
 
 # Define a function to get my IP address
 sub my_ip() {
+  if (defined $client_ip) { return $client_ip; }
   my $ip = dns_res(Sys::Hostname::hostname);
   if ($ip eq 'null') { return '127.0.0.1'; }
   return $ip;
