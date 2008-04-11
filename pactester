@@ -49,7 +49,7 @@ Options:
   -p pacfile: PAC file to test
   -u url: URL to test
   -h host: Host part of the URL
-  -c client_ip: Client(my) IP address (defaults to IP address of machine on which script is running)
+  -c client_ip: client IP address (defaults to IP address of the machine on which script is running)
   -f urlslist: a file containing list of URLs to be tested.
 EOF
 }

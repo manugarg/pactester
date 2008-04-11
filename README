@@ -17,9 +17,9 @@ Usage:  ./pactester <-p pacfile> <-u url> [-h host] [-c client_ip]
 
 Options:
   -p pacfile: PAC file to test
-  -c client_ip: client ip address (as returned by myIpAddress).
   -u url: URL to test
   -h host: Host part of the URL
+  -c client_ip: client IP address (defaults to IP address of the machine on which script is running)
   -f urlslist: a file containing list of URLs to be tested.
 
 Example:
