@@ -12,17 +12,19 @@ and automates the whole process.
 Pactester reads a PAC file, evaluates it in a JavaScript context and uses this
 PAC file's logic to determine the proxy for a specific URL.
 
-Usage:  ./pactester <-p pacfile> <-u url> [-h host]
-        ./pactester <-p pacfile> <-f urlslist>
+Usage:  ./pactester <-p pacfile> <-u url> [-h host] [-c client_ip]
+        ./pactester <-p pacfile> <-f urlslist> [-c client_ip]
 
 Options:
   -p pacfile: PAC file to test
+  -c client_ip: client ip address (as returned by myIpAddress).
   -u url: URL to test
   -h host: Host part of the URL
   -f urlslist: a file containing list of URLs to be tested.
 
 Example:
   ./pactester -p wpad.dat -u http://www.google.com
+  ./pactester -p wpad.dat -u http://www.google.com -c 192.168.1.105
   ./pactester -p wpad.dat -f url_list
 
 * How It Works?
