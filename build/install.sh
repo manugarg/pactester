@@ -18,34 +18,36 @@ build_dir=`pwd`
 # Build Log::Log4perl
 tar xzvf Log-Log4perl*.tar.gz
 cd Log-Log4perl*
-perl Makefile.PL PREFIX=$prefix
+perl Makefile.PL PREFIX="$prefix"
 make
 make install
 
 # Find our the lib path
-if [ ! -z $prefix ];then
-  dir=`find $prefix -name "Log4perl.pm" -exec dirname {} \;`
+if [ ! -z "$prefix" ];then
+  dir=`find "$prefix" -name "Log4perl.pm" -exec dirname {} \;`
   log_lib_path=`dirname $dir`
 fi
 
 # Build js
-cd $build_dir
+cd "$build_dir"
 tar xzvf js*.tar.gz
 cd js/src
 make -f Makefile.ref
 # Install libjs.so in $prefix/lib or /usr/lib
-libjs_path=`find $PWD -name "libjs.so"`
-install -D $libjs_path ${prefix:-/usr}/lib/libjs.so
+libjs_path=`find "$PWD" -name "libjs.so"`
+install -D "$libjs_path" "${prefix:-/usr}/lib/libjs.so"
 
 # Build JavaScript::SpiderMonkey
-cd $build_dir
-export PERLLIB=$log_lib_path
+cd "$build_dir"
+export PERLLIB="$log_lib_path"
 tar xzvf JavaScript-SpiderMonkey*.tar.gz
 cd JavaScript-SpiderMonkey*
-perl Makefile.PL PREFIX=$prefix
+perl Makefile.PL PREFIX="$prefix"
 # LD_RUN_PATH set by MakeMaker is not good. Delete it.
 sed -i "/^LD_RUN_PATH[ ]*=.*$/d" Makefile
-LD_RUN_PATH=${prefix:-/usr}/lib make
+sed -i "/^EXTRALIBS[ ]*=.*$/d" Makefile
+sed -i "/^LDLOADLIBS[ ]*=.*$/d" Makefile
+LD_RUN_PATH="${prefix:-/usr}/lib" EXTRALIBS="-L${prefix:-/usr}/lib -ljs" LDLOADLIBS="-L ${prefix:-/usr}/lib -ljs" make
 make install
 
 
@@ -53,7 +55,7 @@ if [ ! -z $prefix ];then
   dir=`find $prefix -name "SpiderMonkey.pm" -exec dirname {} \;`
   js_lib_path=`dirname $dir`
   # Copying pactester and pac_utils.js to $prefix
-  cd $build_dir
+  cd "$build_dir"
   sed "s|#\?use lib qw(.*)|use lib qw($log_lib_path $js_lib_path)\;|g" \
                                              ../pactester > $prefix/pactester
   chmod a+rx $prefix/pactester
