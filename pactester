@@ -43,7 +43,7 @@ sub printusage{
   print <<EOF
 
 Usage:  ./pactester <-p pacfile> <-u url> [-h host] [-c client_ip]
-        ./pactester <-p pacfile> <-f urlslist>
+        ./pactester <-p pacfile> <-f urlslist> [-c client_ip]
 
 Options:
   -p pacfile: PAC file to test
