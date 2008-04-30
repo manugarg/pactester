@@ -141,7 +141,7 @@ if ($rc != 1) {
 
 # Single URL mode
 if (defined $url){
-  $url =~ /(http[s]?|ftp)\:\/\/([^\/]+)/ || die "URL: $url is not valid\n";
+  $url =~ /(http[s]?|ftp)\:\/\/([^\/:]+)/ || die "URL: $url is not valid\n";
   if (not defined $host) { $host = $2; }
   if (findproxy($js_context, $url, $host)){
     print $js_context->property_get("pac.proxy")."\n";
