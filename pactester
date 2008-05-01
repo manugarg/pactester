@@ -158,7 +158,7 @@ if (defined $urls_list) {
     chomp;
     my $url = $_;
     # Extract host from URL
-    if (not $url =~ /(http[s]?|ftp)\:\/\/([^\/]+).*/) {
+    if (not $url =~ /(http[s]?|ftp)\:\/\/([^\/:]+).*/) {
       print "URL: '$url' is not valid\n";
       next;
     }
