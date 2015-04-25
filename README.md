@@ -1,3 +1,5 @@
+**I have stopped maintaining this version of pactester. Please use the version that comes with [pacparser](http://github.com/pacparser/pacparser). -Manu Garg**
+
 Pactester
 =========
 
